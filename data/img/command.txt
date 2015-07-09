@@ -1,0 +1,5 @@
+convert -delay 100 -loop 0 density_posneg0.0.png density_posneg1.0.png density_posneg2.0.png density_posneg3.0.png density_posneg4.0.png density_posneg5.0.png density_posneg6.0.png density_posneg7.0.png density_posneg8.0.png density_posneg9.0.png density_posneg.gif
+
+convert -delay 100 -loop 0 density_pos0.0.png density_pos1.0.png density_pos2.0.png density_pos3.0.png density_pos4.0.png density_pos5.0.png density_pos6.0.png density_pos7.0.png density_pos8.0.png density_pos9.0.png density_pos.gif
+
+
