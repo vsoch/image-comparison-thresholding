@@ -239,6 +239,27 @@ write.table(allres,file=paste(datadir,"/ml_accuracy.tsv",sep=""),sep="\t")
 accuracy_table = accuracy_table(threshold=1.0,direction="posneg",label="cca.pearson",queryimages)
 save(tableone,file="confmatrix_pd_posneg_1_table1.Rda")
 
+# Try making figure for Table 1
+#accuracy_table = read.csv("/home/vanessa/Documents/Work/BRAINMETA/IMAGE_COMPARISON/experiment3_unrelated/table1_mean_accuracies.csv")
+
+# Sort by mean accuracy 
+accuracy_table = accuracy_table[with(accuracy_table, order(-Mean.Accuracy,Standard.Deviation)), ]
+accuracy_table$lower = accuracy_table$Mean.Accuracy - accuracy_table$Standard.Deviation
+accuracy_table$upper = accuracy_table$Mean.Accuracy + accuracy_table$Standard.Deviation
+rownames(accuracy_table) = seq(1,nrow(accuracy_table))
+accuracy_table$sort = as.numeric(rownames(accuracy_table))
+
+ggplot(accuracy_table, aes(x=sort,y=Mean.Accuracy,Contrast=Contrast,colour=Task)) + 
+  geom_errorbar(data=accuracy_table, mapping=aes(y=Mean.Accuracy, x=sort, ymin=lower, ymax=upper,color=Task,Contrast=Contrast), height=0.2, size=1) + 
+  geom_point() + 
+  xlab("Contrast") +
+  ylab("Mean Accuracy +/- 1SD") +
+  scale_x_discrete(limits=accuracy_table$sort,labels=accuracy_table$Contrast) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggsave(paste(savedir,"/contrast_accuracies.png",sep=""))
+
+
 ## Figure 2 for Paper: Accuracy across all variables for worst performing contrast
 image = "TASK07_CON35"
 
