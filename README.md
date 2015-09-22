@@ -40,4 +40,4 @@ To generate our Table 1 (and the confusion matrices for each thresholding, compa
 For our discussion, we wanted to compare the percentage of voxels obtained at our optimal threshold to maps generated with random field theory thresholding, and we did this with [compare_to_rft.py](analysis/compare_to_rft.py) 
 
 #### results
-Complete code to generate the results interface, an interactive confusion matrix for the classification task, is also [provided](results). A live version is also [available](http://www.vbmis.com/bmi/project/confusion)
+Complete code to generate the results interface, an interactive confusion matrix for the classification task, is also provided as a [flask interface](results) or [static site](https://github.com/vsoch/image-comparison-thresholding/tree/gh-pages). A live version is also [available](http://vsoch.github.io/image-comparison-thresholding)
