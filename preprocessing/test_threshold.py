@@ -40,7 +40,7 @@ contrast_task = os.path.basename(groupA).replace("_groupA_tstat1.nii.gz","")
 try:
     dofA = len(open("%s/../copesA.txt" %(input_directory),"r").readlines())-2
 except:
-    dofA = 46
+    dofA = 44
 
 # Convert to Z score maps
 mrA = IT.t_to_z(mrA,dofA)
@@ -81,7 +81,7 @@ thresh_id = []
 try:
     dofB = len(open("%s/../copesB.txt" %(input_directory),"r").readlines())-2
 except: 
-    dofB = 46
+    dofB = 44
 
 for groupB in groupB_maps:
     mrB = nib.load(groupB)
