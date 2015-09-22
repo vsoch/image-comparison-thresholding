@@ -1,6 +1,6 @@
 ### Steps for Handling Missingness Experiment
 
-This repository includes scripts to generate initial permutation data, and then carry out analyses. Since generation of the permutaion data requires considerable computational resources and access to private subject data to indicate relatedness (NOT PROVIDED) we are including the output of these methods (with no proprietary data) on which subsequent analyses can be carried out. The structure of this repository is as follows:
+This repository includes scripts to generate initial subsampling data, and then carry out analyses. Since generation of the samples data requires considerable computational resources and access to private subject data to indicate relatedness (NOT PROVIDED) we are including the output of these methods (with no proprietary data) on which subsequent analyses can be carried out. You can visualize the confusion matrices for our result [here](http://vsoch.github.io/image-comparison-thresholding). The structure of this repository is as follows:
 
 #### preprocessing
 Includes scripts for working with raw data to run permutations to generate image comparison scores across thresholds, similarity metrics, directions (positive vs. negative values), and groups of unrelated subjects. Meta data about subjects is not provided, however a researcher looking to reproduce analyses in entirely can [apply for access](http://www.humanconnectome.org/data/data-use-terms/restricted-access-overview.html).
@@ -40,4 +40,4 @@ To generate our Table 1 (and the confusion matrices for each thresholding, compa
 For our discussion, we wanted to compare the percentage of voxels obtained at our optimal threshold to maps generated with random field theory thresholding, and we did this with [compare_to_rft.py](analysis/compare_to_rft.py) 
 
 #### results
-Complete code to generate the results interface, an interactive confusion matrix for the classification task, is also provided as a [flask interface](results) or [static site](https://github.com/vsoch/image-comparison-thresholding/tree/gh-pages). A live version is also [available](http://vsoch.github.io/image-comparison-thresholding)
+Complete code to generate the results interface, an interactive confusion matrix for the classification task, is also provided as a [flask interface](results) or [static site](https://github.com/vsoch/image-comparison-thresholding/tree/gh-pages). A live version is also [available](http://vsoch.github.io/image-comparison-thresholding).
