@@ -52,7 +52,6 @@ $(document).ready(function() {
         function(acc) {
             var index = direction + "." + strategy + "." + metric + "." + threshold;
             var record = acc[index]
-            console.log(record)
             var accuracy  = record.accuracy_mean.toFixed(3)
             var accuracy_up = record.up.toFixed(3)
             var accuracy_down = record.down.toFixed(3)
@@ -130,7 +129,6 @@ $(document).ready(function() {
         },
 
         function(error, data) {
-          console.log(data)
           var colorScale = d3.scale.quantile()
               .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
               .range(colors);
