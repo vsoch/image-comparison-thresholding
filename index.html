@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+  <head>
+    <title>HCP tfMRI Confusion Matrix</title>
+    <script src="static/js/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/d3.v3.js"></script>
+    <script src="static/js/tipsy.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+    <link href='static/css/style.css' rel='stylesheet' type='text/css'>
+
+  </head>
+
+<script>
+
+// Get URL variables
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+// Parse URL variables
+function get_variable(url_data,key,defaultValue) {
+
+    if (typeof url_data[key] == 'undefined'){ 
+        var variable = defaultValue;
+    } else { 
+        var variable = url_data[key].replace("/",""); 
+    }
+    return variable
+}
+
+//Get json name from the browser url
+var json_data = getUrlVars()
+var metric = get_variable(json_data,"metric","pearson")
+var strategy = get_variable(json_data,"strategy","cca")
+var threshold = get_variable(json_data,"threshold","1")
+var direction = get_variable(json_data,"direction","posneg")
+var datafile = "static/" + strategy + "_" + metric + "_" + direction + "_" + threshold + ".tsv"
+
+
+// On any button click, change the input data
+$(document).ready(function() {
+
+        // Read in json and set other variables
+        d3.json("static/data/supp_data2_ml_accuracy.json",
+        function(acc) {
+            var index = direction + "." + strategy + "." + metric + "." + threshold;
+            var record = acc[index]
+            console.log(record)
+            var accuracy  = record.accuracy_mean.toFixed(3)
+            var accuracy_up = record.up.toFixed(3)
+            var accuracy_down = record.down.toFixed(3)
+            var accuracy_string = accuracy + " (" + accuracy_down + "," + accuracy_up + ")"
+            $("#accuracy").text(accuracy_string);
+              
+        });
+
+        var strategy_lookup = Object()
+        strategy_lookup["svi"] = "Single Value Imputation"
+        strategy_lookup["cca"] = "Complete Case Analysis"
+
+        // Update user selection
+        $("#selected_metric").text(metric);
+        $("#selected_strategy").text(strategy_lookup[strategy]);
+        $("#selected_threshold").text(threshold + ".0");
+        $("#selected_direction").text(direction);
+
+        // Check radio buttons
+        $("#" + strategy).prop("checked", true)
+        $("#" + direction).prop("checked", true)
+        $("#" + metric).prop("checked", true)
+        $("#thresh" + threshold).prop("checked", true)
+
+        // And update labels!
+        $("#" + strategy + "_label").addClass("active")
+        $("#" + direction + "_label").addClass("active")
+        $("#" + metric + "_label").addClass("active")
+        $("#thresh" + threshold + "_label").addClass("active")
+
+        $('input[type=radio]').change(function() {
+          var thresh = $('input[name=thresh]:checked').val();
+          var metric = $('input[name=metric]:checked').val();
+          var direction = $('input[name=direction]:checked').val(); 
+          var strategy = $('input[name=strategy]:checked').val(); 
+          url =  "?strategy=" + strategy + "&metric=" + metric + "&direction=" + direction + "&threshold=" + thresh
+          window.location.replace(url)       
+        });
+     });
+
+      var margin = { top: 20, right: 0, bottom: 20, left: 100 },
+          width = 1000 - margin.left - margin.right,
+          height = 1000 - margin.top - margin.bottom,
+          gridSize = Math.floor(width / 47),
+          legendElementWidth = gridSize*2,
+          buckets = 9,
+          colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"] // alternatively colorbrewer.YlGnBu[9]       
+          labels = ["TASK01_CON07","TASK01_CON08","TASK01_CON09","TASK02_CON25","TASK02_CON26","TASK02_CON27","TASK03_CON19",
+                    "TASK03_CON20","TASK03_CON22","TASK04_CON61","TASK04_CON62","TASK04_CON63","TASK04_CON64","TASK04_CON65","TASK04_CON66",
+                    "TASK04_CON67","TASK04_CON68","TASK04_CON69","TASK04_CON70","TASK04_CON71","TASK04_CON72","TASK04_CON73","TASK05_CON13",
+                    "TASK05_CON14","TASK05_CON15","TASK06_CON01","TASK06_CON02","TASK06_CON06","TASK07_CON31","TASK07_CON32","TASK07_CON33",
+                    "TASK07_CON34","TASK07_CON35","TASK07_CON36","TASK07_CON37","TASK07_CON38","TASK07_CON39","TASK07_CON40","TASK07_CON41",
+                    "TASK07_CON45","TASK07_CON46","TASK07_CON47","TASK07_CON48","TASK07_CON49","TASK07_CON50","TASK07_CON51","TASK07_CON52"]
+          
+
+      // Tooltips
+      var tip = d3.tip()
+       .attr('class', 'd3-tip')
+       .offset([-10,10])
+       .html(function(d) {
+       return "<div class='row' style='margin-left:14px'><strong>count: </strong> "+ d.value +"</div><div class='col-md-6'><strong>actual:</strong><br><img src='static/img/" + d.threshold + "_" + d.actual + "_" + d.direction + ".png' width=350px></div><div class='col-md-6'><strong>predicted:</strong><br><img src='static/img/" + d.threshold + "_" + d.predicted + "_" + d.direction + ".png' width=350px></div>";
+       })
+
+      d3.tsv(datafile,
+        function(d) {
+          return {
+            actual: d.actual,
+            predicted: d.predicted,
+            x: +d.x,
+            y: +d.y,
+            value: +d.count,
+            threshold: d.threshold,
+            direction: d.direction
+          };
+        },
+
+        function(error, data) {
+          console.log(data)
+          var colorScale = d3.scale.quantile()
+              .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
+              .range(colors);
+
+          var svg = d3.select("#chart").append("svg")
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+          // Call tooltips function
+          svg.call(tip);
+
+          var xLabels = svg.selectAll(".xLabel")
+              .data(labels)
+              .enter().append("text")
+                .text(function (d) { return d.toLowerCase(); })
+                .attr("x", 0)
+                .attr("y", function (d, i) { return i * gridSize; })
+                .style("text-anchor", "end")
+                .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
+                .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "xLabel mono axis yaxis" : "xLabel mono axis"); });
+
+          var heatMap = svg.selectAll(".count")
+              .data(data)
+              .enter().append("rect")
+              .attr("x", function(d) { return (d.y - 1) * gridSize; })
+              .attr("y", function(d) { return (d.x - 1) * gridSize; })
+              .attr("rx", 4)
+              .attr("ry", 4)
+              .attr("class", "count bordered")
+              .attr("width", gridSize)
+              .attr("height", gridSize)
+              .style("fill", colors[0])
+              .on('mouseout.tip', tip.hide)
+              .on('mouseover.tip', tip.show);
+
+          heatMap.transition().duration(1000)
+              .style("fill", function(d) { return colorScale(d.value); });
+
+          heatMap.append("title").text(function(d) { return d.value; });
+              
+          var legend = svg.selectAll(".legend")
+              .data([0].concat(colorScale.quantiles()), function(d) { return d; })
+              .enter().append("g")
+              .attr("x",0)
+              .attr("y",-1000)
+              .attr("class", "legend");
+
+          legend.append("rect")
+            .attr("x", function(d, i) { return legendElementWidth * i; })
+            .attr("y", height)
+            .attr("width", legendElementWidth)
+            .attr("height", gridSize / 2)
+            .style("fill", function(d, i) { return colors[i]; });
+
+          legend.append("text")
+            .attr("class", "mono")
+            .text(function(d) { return " ≥ " + Math.round(d); })
+            .attr("x", function(d, i) { return legendElementWidth * i; })
+            .attr("y", height + gridSize);
+});
+</script>
+  <body>
+    <div class="row" style="margin-top:70px;margin-left:20px">
+        <div class="col-md-3" style="margin-top:70px">
+            <h2>Selection</h2>
+            <div class="well"><strong>Metric: </strong><div id="selected_metric"></div><br>
+                             <strong>Direction: </strong><div id="selected_direction"></div><br> 
+                             <strong>Threshold: </strong><div id="selected_threshold"></div><br>
+                             <strong>Strategy: </strong><div id="selected_strategy"></div><br>
+                             <strong>Accuracy: </strong><div id="accuracy"></div></div>
+            <h3>Metric</h3>
+                <div class="btn-group" data-toggle="buttons">
+               		<label id="spearman_label" class="btn btn-default">
+		            <input type="radio" name="metric" id="spearman" value="spearman" autocomplete="off"> Spearman
+		         </label>
+		        <label id="pearson_label" class="btn btn-default">
+		            <input type="radio" name="metric" id="pearson" value="pearson" autocomplete="off"> Pearson
+		        </label>   
+		</div>
+            <h3>Direction</h3>
+                <div class="btn-group" data-toggle="buttons">
+		        <label id="posneg_label" class="btn btn-default">
+		            <input type="radio" name="direction" id="posneg" value="posneg" autocomplete="off"> Positive and Negative
+		        </label>   
+               		<label id="pos_label" class="btn btn-default">
+		            <input type="radio" name="direction" id="pos" value="pos" autocomplete="off"> Positive Only
+		         </label>
+		</div>
+            <h3>Threshold</h3>
+	        <div class="btn-group" data-toggle="buttons">
+               		<label id="thresh0_label" class="btn btn-default">
+		            <input type="radio" id="thresh0" name="thresh" value="0" autocomplete="off"> 0.0
+		        </label>
+		        <label id="thresh1_label" class="btn btn-default">
+		            <input type="radio" id="thresh1" name="thresh" value="1" autocomplete="off"> 1.0
+		        </label>   
+               		<label id="thresh2_label" class="btn btn-default">
+		            <input type="radio" id="thresh2" name="thresh" value="2" autocomplete="off"> 2.0
+		        </label>
+               		<label id="thresh3_label" class="btn btn-default">
+		            <input type="radio" id="thresh3" name="thresh" value="3" autocomplete="off"> 3.0
+		        </label>
+               		<label id="thresh4_label" class="btn btn-default">
+		            <input type="radio" id="thresh4" name="thresh" value="4" autocomplete="off"> 4.0
+		        </label>
+               		<label id="thresh5_label" class="btn btn-default">
+		            <input type="radio" id="thresh5" name="thresh" value="5" autocomplete="off"> 5.0
+		        </label>
+               		<label id="thresh6_label" class="btn btn-default">
+		            <input type="radio" id="thresh6" name="thresh" value="6" autocomplete="off"> 6.0
+		        </label>
+               		<label id="thresh7_label" class="btn btn-default">
+		            <input type="radio" id="thresh7" name="thresh" value="7" autocomplete="off"> 7.0
+		        </label>
+               		<label id="thresh8_label" class="btn btn-default">
+		            <input type="radio" id="thresh8" name="thresh" value="8" autocomplete="off"> 8.0
+		        </label>
+               		<label id="thresh9_label" class="btn btn-default">
+		            <input type="radio" id="thresh9" name="thresh" value="9" autocomplete="off"> 9.0
+		        </label>
+		</div>	
+            <h3>Comparison Strategy</h3>
+	        <div class="btn-group" data-toggle="buttons">
+		        <label id="cca_label" class="btn btn-default">
+		            <input type="radio" name="strategy" id="cca" value="cca" autocomplete="off"> Complete Case Analysis
+		        </label>   
+               		<label id="svi_label" class="btn btn-default">
+		            <input type="radio" name="strategy" id="svi" value="svi" autocomplete="off"> Single Value Imputation
+		        </label>
+		</div>	        
+              <br><br>
+        </div>
+        <div class="col-md-6">
+            <h1>HCP tfMRI Confusion Matrix</h1>
+            <div id="chart"></div>
+        </div>
+    </div>
+  </body>
+<footer>
+<a href="about.html">About</a>
+</footer>
+</html>

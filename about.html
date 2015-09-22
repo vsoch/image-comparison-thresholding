@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+  <head>
+    <title>HCP tfMRI Confusion Matrix: About</title>
+    <script src="static/js/jquery-2.1.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/css/bootstrap.min.css">
+    <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/d3.v3.js"></script>
+    <script src="static/js/tipsy.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+    <link href='static/css/style.css' rel='stylesheet' type='text/css'>
+  </head>
+  <body>
+    <div class="row" style="margin-left:20px">
+        <div class="col-md-3" style="margin-top:70px">
+            <h3>What am I looking at?</h3>
+            <h3 style="margin-top:110px">What do you mean by brain map?</h3>
+            <h3 style="margin-top:105px">What is a confusion matrix?</h3>
+            <h3 style="margin-top:440px">How did you derive and compare brain maps?</h3>
+            <h3 style="margin-top:220px">What did you learn?</h3>
+            <h3 style="margin-top:100px">Why should I care?</h3>
+            <h3 style="margin-top:150px">What do you mean by traditional approaches?</h3>
+            <h3 style="margin-top:165px">Where can I learn more?</h3>
+        <br><br>
+        </div>
+        <div class="col-md-6">
+<div class="well" style="margin-top:80px">
+This analysis aimed to discover an optimal strategy for comparison of pairwise brain maps in the context of image classification. We tested classification across a range of thresholds, image comparison strategies, and similarity metrics, and this web portal shows "how we did" for each any combination of those variables by way of a confusion matrix.
+</div>
+<div class="well">
+In functional magnetic resonance imaging (fMRI) we can put people in the scanner and have them perform different tasks that measure brain function, or behavioral paradigms that might test a cognitive process of interest to help us better understand how the human brain works.  When we put a bunch of human brains in a standard space and do calculations to determine what areas are being activated by the task, we generate summary brain maps that describe our result.
+</div>
+<div class="well">
+In a classification framework, we give ourselves points (toward accuracy) when some object, A, that we are trying to classify, is predicted as "A" by our classifier. You can imagine four possibilities: predicting A when the item is actually A (true positive), predicting A when it is B (false positive), predicting B when it is B (true negative), and predicting B when it is A (false negative). In machine learning we summarize this performance in a (typically) 2x2 table called a "confusion matrix":</div>
+<h5 style="margin-left:200px">Predicted</h5>
+<table id="table" class="table">
+<th>
+<td></td>
+<td>A</td>
+<td>B</td>
+</th>
+<tr>
+<td>Actual</td>
+<td>A</td>
+<td>True Positive</td>
+<td>False Positive</td>
+</tr>
+<tr>
+<td></td>
+<td>B</td>
+<td>False Negative</td>
+<td>True Negative</td>
+</tr>
+</table>
+<div class="well">
+Each cell has counts for the number of true positive, false positive, true negative, and false negative, and you can imagine that a perfect classifier will have all counts down the top left to bottom right diagonal. Now imagine that we have many more classes than "A" and "B," as is the case with our brain maps classification task, for which there are 47. The idea is the same, except now we have a 47 X 47 matrix.
+</div>            
+<div class="well">
+Our brain maps were derived using data from the <a href="http://www.humanconnectome.org" target="_blank">Human Connectome Project</a>, using a permutation-based approach. Any two images could be compared by either taking the intersection of data in the map (complete case analysis) or a union (single value imputation), which substitutes missing values in either map with zeros. Each unthresholded image associated with a particular behavior in a cognitive task was compared to all other images for each comparison strategy (complete case analysis and single value imputation), similarity metric (a Pearson or Spearman score), across a range of thresholdings of the second map.  When you mouse over a cell, we show the actual (row) and predicted (column) thresholded maps. Keep in mind that these images were produced from only one of 500 permutations using a subset of data, and so a map that appears empty at a higher threshold (with mis-classifications) indicates that one of the samplings did not have an empty map. We also show the same set of images for rows and columns, however comparison in the analysis was done between two separate groups, A and B.  
+</div>
+<div class="well">
+We found that, for our particular dataset, using a pearson score with complete case analysis at a threshold of +/-1.0 had the highest classification accuracy (0.984, 95% CI = 0.983, 0.985), and that accuracy decreases as threshold increases. Complete results will be released with our manuscript.
+</div>            
+<div class="well">
+The task of image comparison is relevant to many fundamentals of neuroimaging analysis, including performing meta-analysis, clustering, and evaluating if a result has been replicated. As the sharing of statistical brain maps becomes the norm, leading to entire databases of such maps, having automated, and optimal approaches to evaluate new results, or find similar maps, is essential. We are not claiming that there exists an optimal strategy across all brain maps, but rather, that care must be taken to test for optimal comparison strategies, and that assuming that traditional thresholding approaches are best is not always the right thing to do.
+</div>
+<div class="well">
+There are two contrasting viewpoints held in the neuroimaging community pertaining to image thresholding. The first claims that unthresholded maps, by way of having more data, are always better than threhsolded maps. By demonstrating that thresholded maps produce higher classification accuracy than unthresholded, we challenge this view, and suggest that very small values in the map may serve as noise. The second viewpoint is the standard use of a thresholding strategy called "random field theory." We found that random field theory produces maps that are more highly thresholded, corresponding to lower classification accuracy in our analysis. This finding suggests that voxels that were "thresholded away" by random field theory may in fact contain meaningful signal.
+</div>
+<div class="well">
+Complete results and methods will be released with publication of our manuscript.
+</div>
+</div>            
+        </div>
+    </div>
+  </body>
+<footer>
+<a href="index.html">Back</a> <a target="_blank" style="float:right;margin-right:20px" href="http://poldracklab.stanford.edu">Poldracklab</a>
+</footer>
+</html>
