@@ -38,9 +38,9 @@ for i in range(0,len(input_maps)):
         print thresh
         pos = IT.threshold_pos(image,thresholds=[thresh])[thresh]
         posneg = IT.threshold_abs(image,thresholds=[thresh])[thresh]
-        fig = plot_stat_map(pos,vmax=max,title="%s Positive Only" %title)#,display_mode='z', cut_coords=5)
+        fig = plot_stat_map(pos,vmax=max,title="%s Positive Only" %title,cut_coords=(0,0,0))
         fig.savefig("%s/%s_%s_pos.png" %(outdir,thresh,mapname))
         fig.close()
-        fig = plot_stat_map(posneg,vmax=max,title="%s Positive and Negative" %title)#,display_mode='z', cut_coords=5)
+        fig = plot_stat_map(posneg,vmax=max,title="%s Positive and Negative" %title,cut_coords=(0,0,0))
         fig.savefig("%s/%s_%s_posneg.png" %(outdir,thresh,mapname))
         fig.close()
