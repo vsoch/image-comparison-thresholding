@@ -1,4 +1,6 @@
-### Steps for Handling Missingness Experiment
+### Effects of thresholding on correlation-based image similarity metrics
+
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.32074.svg)](http://dx.doi.org/10.5281/zenodo.32074)
 
 This repository includes scripts to generate initial subsampling data, and then carry out analyses. Since generation of the samples data requires considerable computational resources and access to private subject data to indicate relatedness (NOT PROVIDED) we are including the output of these methods (with no proprietary data) on which subsequent analyses can be carried out. You can visualize the confusion matrices for our result [here](http://vsoch.github.io/image-comparison-thresholding). The structure of this repository is as follows:
 
