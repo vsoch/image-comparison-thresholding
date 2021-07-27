@@ -1,0 +1,10 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Sochat
+    given-names: Vanessa
+    orcid: https://orcid.org/0000-0002-4387-3819
+title: "Effects of thresholding on correlation-based image similarity metrics"
+version: 1.0
+doi: 10.3389/fnins.2015.00418
+date-released: 2015-10-29
